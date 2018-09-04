@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
+
+#ifndef timersub
+#define timersub(a, b, result) \
+        do { \
+                (result)->tv_sec = (a)->tv_sec - (b)->tv_sec; \
+                (result)->tv_usec = (a)->tv_usec - (b)->tv_usec; \
+                if ((result)->tv_usec < 0) { \
+                        --(result)->tv_sec; \
+                        (result)->tv_usec += 1000000; \
+                } \
+        } while (0)
+#endif
 
 
 /* FUNÇÕES DE OPERAÇÕES MATRICIAIS */
@@ -39,7 +52,8 @@ int main(){
 /* DECLARAÇÃO DE VARIÁVEIS */
     int **A, **B, **C;
     int **M1, **M2, **M3, **M4, **M5, **M6, **M7, **la, **lb;
-    int i, j, tam= 8, htam= tam/2; //tam = tamanho; htam = half-tamanho;
+    int i, j, tam= 4, htam= tam/2; //tam = tamanho; htam = half-tamanho;
+    struct timeval start, end, tempo;
 
     srand(time(NULL));
 /* FIM DECLARAÇÃO DE VARIÁVEIS */
@@ -107,6 +121,7 @@ int main(){
         }
 /* FIM IMPRIMIR MATRIZES A e B */
 
+    gettimeofday(&start, NULL);
 
 /* CALCULO DOS TERMOS M */
     //M1
@@ -146,6 +161,9 @@ int main(){
     subMatriz(somaMatriz(somaMatriz(M3, M6, C, htam, 0, 0, 0, 0, htam, htam), M1, C, htam, 0, 0, 0, 0, htam, htam), M2, C, htam, 0, 0, 0, 0, htam, htam);
 /* FIM CALCULO C */
 
+    gettimeofday(&end, NULL);
+
+    timersub(&end, &start, &tempo);
 
 /* IMPRIMIR MATRIZ C */
     printf("\nMatriz C:\n");
@@ -156,6 +174,8 @@ int main(){
             printf("\n");
         }
 /* FIM IMPRIMIR MATRI C */
+
+    printf("Tempo de calculo: %ld.%06ld\n", (long int)tempo.tv_sec, (long int)tempo.tv_usec);
 
     free(A);
     free(B);
