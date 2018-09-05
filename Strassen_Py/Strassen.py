@@ -2,7 +2,7 @@ import numpy as np
 import math
 import datetime
 
-def multi_strassen(A,B,check_dim = True, check_ig = True, check_quad = True, check_pot = True):
+def multi_strassen(A,B, check_ig = True, check_quad = True, check_pot = True, check_time = True):
     
     def Strassen(matriz_1,matriz_2): # Função do algoritmo de Strassen para multiplicação de matrizes do tipo 2x2
         if (matriz_1.shape[0] != 2) or (matriz_1.shape[1] != 2) or (matriz_2.shape[0] != 2) or (matriz_2.shape[1] != 2):
@@ -24,31 +24,31 @@ def multi_strassen(A,B,check_dim = True, check_ig = True, check_quad = True, che
         Resultado[1,1] = M1 - M2 + M3 + M6
 
         return Resultado
-    
-    inicio = datetime.datetime.now()
+    if check_time:
+        inicio = datetime.datetime.now()
+        
     C = np.zeros([A.shape[0],B.shape[1]]) #Guarda o tamanho original da matriz multiplicada
 
     #Parte 1: Checagem das condições pré-estabelecidas
     if (A.shape[1] != B.shape[0]):
         print("Erro: Não é possível realizar a multiplicação C = A * B com as matrizes fornecidas")
+        return None, None
 
-    if check_dim:
-        
-        if (len(A.shape) != 2) or (len(B.shape) != 2): #Checa a dimensão da matriz
-            print("Erro: As matrizes devem ser bidimensionais")
-            return None
+    if (len(A.shape) != 2) or (len(B.shape) != 2): #Checa a dimensão da matriz
+        print("Erro: As matrizes devem ser bidimensionais")
+        return None, None
 
     if check_ig:
         
         if (A.shape != B.shape): #Checa se as matrizes possuem mesma dimensão
             print("Erro: As matrizes devem possuir mesmas dimensões")
-            return None
+            return None, None
        
     if check_quad:
         
-        if ((A.shape[0] - A.shape[1]) != 0) or ((B.shape[0] - B.shape[1]) != 0):
+        if ((A.shape[0] - A.shape[1]) != 0) or ((B.shape[0] - B.shape[1]) != 0): #Checa se as matrizes são quadradas
             print("Erro: As matrizes devem ser ambas quadradas")
-            return None
+            return None, None
 
     if check_pot:
         
@@ -96,6 +96,11 @@ def multi_strassen(A,B,check_dim = True, check_ig = True, check_quad = True, che
             D[i:i+2,j:j+2] = soma
     C = D[0:C.shape[0],0:C.shape[1]]
     print (C)
-    fim = datetime.datetime.now()
-    print("Tempo de execução = ", fim - inicio)
-    return C
+    if check_time:
+        fim = datetime.datetime.now()
+        tempo = fim - inicio
+        #print("Tempo de execução = ", fim - inicio)
+    else:
+        tempo = "Tempo não calcualdo"
+        
+    return C, tempo
